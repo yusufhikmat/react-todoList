@@ -11,7 +11,7 @@ const Content = ({items, handleCheck, handleDelete}) => {
                         handleCheck={handleCheck}
                         handleDelete={handleDelete}
             />
-        ) : (<p>The list is empty</p>)}
+        ) : (<p className='emptyText'>The list is empty</p>)}
             
         </ul>
     </div>

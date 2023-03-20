@@ -2,74 +2,91 @@
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Content from './components/Content';
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AddItem from './components/AddItem';
 
 function App() {
-  const [items, setItems] = useState([
-    {
-        id:1,
-        checked:false,
-        item:"Items 1"
-    },
-    {
-        id:2,
-        checked:false,
-        item:"Items 2"
-    },
-    {
-        id:3,
-        checked:true,
-        item:"Items 3"
-    },
-])
+  const API_URL = "http://localhost:3500/items";
+
+  const [items, setItems] = useState([])
+  const [newItems, setNewItems] = useState('')
+  const [search, setSearch] = useState('')
+  const [error, setError] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
 
 
-const [newItems, setNewItems] = useState('')
-
+  useEffect(()=>{
+    const fetchItems = async ()=>{
+      try{
+          const response = await fetch(API_URL);
+          if(!response.ok) throw Error("Did not ewcieve expected data")
+          const listItems =await response.json();
+          setItems(listItems)
+          setError(null)
+          setIsLoading(false)
+      }catch(err){
+        setError(err.message)
+        
+      }
+    }
+    setTimeout(() => {
+      (async ()=>await fetchItems())()
+    }, 2000);
+  },[])
+  
 const addItem = (item) =>{
   const id = items.length ? items[items.length - 1].id + 1 : 1;
   const myNewItem = {id, checked:false, item};
   const listItems = [...items, myNewItem]
   setItems(listItems);
-  localStorage.setItem("shoppinglist", JSON.stringify(listItems))
 }
+
 const handleSubmit = (e)=>{
   e.preventDefault()
-  if(!newItems)return;
+  if(!newItems){
+    return;
+  }
+  else{ 
 addItem(newItems);
 setNewItems("")
-}
+}} 
+
 const handleCheck =(id)=>{
-   // i mapped the items and return item.id is equal to the id,
-    //using query string...., i accepted an item with an opposite type check or its initial item
-    //
-    const listItems = items.map((item)=>{
+  const listItems = items.map((item)=>{
         return  item.id === id ? 
         { ...item, checked : !item.checked }: item 
         }
     )
     setItems(listItems);
-    localStorage.setItem("shoppinglist", JSON.stringify(listItems))
 }
+
 const handleDelete = (id)=>{
     const listItems = items.filter((item)=> item.id !== id);
     setItems(listItems);
-    localStorage.setItem("shoppinglist", JSON.stringify(listItems))
 }
   return (
     <div className="app">
-      <Header title="My Groceries"/>
+      <Header 
+          title="MyGroc" 
+          length={items.length}
+          search={search}
+          setSearch={setSearch}
+          />
       <AddItem  
           newItems={newItems}
           setNewItems={setNewItems}
           handleSubmit={handleSubmit}
       />
-      <Content  items={items}
-                handleCheck={handleCheck}
-                handleDelete={handleDelete}
-      />
-      <Footer length={items.length}/>
+      <main>
+          {isLoading && <p>Loading...</p>}
+          {error && <p style={{color:"red"}}>{error }</p>}
+          {!error && !isLoading && 
+          <Content  items={items.filter((item)=>((item.item).toLowerCase()).includes(search.toLowerCase()))}
+                    handleCheck={handleCheck}
+                    handleDelete={handleDelete}
+          />}
+      </main>
+      <Footer/>
     </div>
   );
   }

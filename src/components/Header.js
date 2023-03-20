@@ -1,9 +1,14 @@
 import React from 'react'
+import SearchItem from './SearchItem'
 
-const Header = ({title}) => {
+const Header = ({title, length, search, setSearch}) => {
   return (
     <div className='header'>
-        <h2>{title}</h2>
+        <h2 className='title'>{title}</h2>
+        <SearchItem 
+          search={search}
+          setSearch={setSearch}
+        />
     </div>
   )
 }

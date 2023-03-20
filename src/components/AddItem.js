@@ -2,8 +2,7 @@ import React from 'react'
 
 const AddItem = ({newItems, setNewItems, handleSubmit}) => {
   return (
-    <form className='addForm'>
-    <label htmlFor='addItem'>Add Item</label>
+    <form className='addForm' onSubmit={handleSubmit}>
     <input 
         autoFocus
         id="addItem"

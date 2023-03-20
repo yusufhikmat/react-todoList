@@ -19,7 +19,6 @@ const ItemLists = ({items, handleCheck, handleDelete}) => {
                     className='delete'
                     role="button"
                     tabIndex="0"
-                    
                 />
                 </li>
             ))
